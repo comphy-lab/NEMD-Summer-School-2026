@@ -28,7 +28,7 @@ variable dt      index 0.005   # timestep
 variable tdamp   index 1.0     # Nose-Hoover damping (tau)
 variable nevery  index 100     # output frequency
 variable nequil  index 10000   # equilibration steps
-variable nprod   index 10000  # production steps. LIVE default 100000; the shipped reference uses 500000
+variable nprod   index 50000  # production steps. LIVE default 100000; the shipped reference uses 500000
 variable seed    index 90187   # RNG seed for the initial velocities. The ensemble varies this per replica
 variable dump    index 0       # -var dump 1 -> write slab_traj.xyz (production) for view_domain / intrinsic
 variable localstress index 0   # -var localstress 1 -> also bin the diagonal pressure tensor for gamma
@@ -90,17 +90,17 @@ print "T ${T}"         append ${outdir}/slab_params.txt
 print "seed ${seed}"   append ${outdir}/slab_params.txt
 print "bin ${bin}"     append ${outdir}/slab_params.txt
 
+#Equilibration run
+fix nvtall all nvt temp ${T} ${T} ${tdamp}
+run ${nequil}
+reset_timestep 0
+unfix nvtall
+
 # optional orientation trajectory for VMD/OVITO (production only; off by default, pass -var dump 1).
 # element names are only for viewer colouring; the model is a generic LJ channel.
 if "${dump} > 0" then &
   "dump dvmd all xyz 1000 ${outdir}/day2_traj.xyz" &
   "dump_modify dvmd element Ar sort id"
-
-#Equilibration run
-fix nvtall all nvt temp ${T} ${T} ${tdamp}
-run ${nequil}
-#reset_timestep 0
-unfix nvtall
 
 # ---- production observables (defined AFTER equilibration so they sample production only) ----
 variable nb  equal round(v_Lz/v_bin)
