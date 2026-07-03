@@ -11,7 +11,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from lammps_io import read_profile
 
-def plot(z, rho, out="day1_density.png"):
+def plot(z, rho, rho_bulk, rho_peak, out="day1_density.png"):
     """Save rho(z) with z vertical, so it reads like the channel side-on."""
     try:
         import matplotlib
@@ -22,6 +22,13 @@ def plot(z, rho, out="day1_density.png"):
         print("    (matplotlib not found - skipping the plot)")
         return
     plt.plot(rho, z)                       # density on x, height z up the y-axis
+    # mark the two values the sheet reads off the profile
+    plt.axvline(rho_bulk, color="#999", ls="--", lw=0.9,
+                label=r"$\rho_{\mathrm{bulk}} \approx %.2f$" % rho_bulk)
+    ipk = rho.argmax()
+    plt.plot(rho[ipk], z[ipk], "o", color="#B23A2E", ms=6,
+             label=r"$\rho_{\mathrm{peak}} \approx %.2f$" % rho_peak)
+    plt.legend(fontsize=8, frameon=False, loc="center right")
     plt.xlabel(r"number density $\rho(z)$")
     plt.ylabel(r"$z\ (\sigma)$")
     plt.title("density profile across the channel")
@@ -45,14 +52,14 @@ def main():
     rho_peak = rho.max()
     contrast = rho_peak / rho_bulk
 
-    print("\n[2] INTERFACIAL DENSITY")
+    print("\nSheet 1: density")
     print(f"    bulk number density  rho_bulk ~ {rho_bulk:.3f}")
     print(f"    near-wall peak rho    ~ {rho_peak:.3f}  (layering contrast {contrast:.2f}x)")
     if contrast > 1.2:
         print("    -> the liquid is NOT uniform: it stacks into layers against the wall.")
     else:
         print("    -> no layering left: the liquid meets the wall essentially uniform.")
-    plot(z, rho)
+    plot(z, rho, rho_bulk, rho_peak)
 
 if __name__ == "__main__":
     main()

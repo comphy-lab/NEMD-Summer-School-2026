@@ -7,7 +7,7 @@ the heat current per unit area divided by the temperature JUMP from the wall
 surface to the fluid. Run after, e.g.
 
     lmp_serial -in conductance.in
-    python3 analyse_conductance.py
+    python analyse_conductance.py
 
 The wall-surface temperature is OCCUPANCY-WEIGHTED (weighted by the bin atom
 count). The surface window spans the outermost ~SURF sigma of the wall: it holds
@@ -161,7 +161,7 @@ def main():
     imbal = abs(abs(p_bot) - abs(p_top)) / max(abs(p_bot), abs(p_top), 1e-12)
 
     hot = "bottom" if Tbot > Ttop else "top"
-    print("\n[4] INTERFACIAL THERMAL CONDUCTANCE")
+    print("\nSheet 4: interfacial conductance")
     print(f"    walls held at Tbot={Tbot:.3f} / Ttop={Ttop:.3f}  ({hot} wall is hot)")
     lin = "linear conduction" if r2T >= 0.95 else "POOR fit -- not yet linear/steady"
     print(f"    fluid-interior dT/dz = {sT:+.4f}  (R^2={r2T:.3f}; {lin})")
@@ -204,9 +204,10 @@ def main():
             print(f"    NOTE: the two walls give G differing {gr:.1f}x. Some asymmetry is")
             print("          expected (they sit at different T), but a large gap means the")
             print("          jump is under-resolved -- run replicas (-var seed) and average.")
-    print("    (reduced LJ units; G = J/dT per wall, hot and cold separate. NB: wall T is")
-    print("     the weighted surface-plane value while fluid T is extrapolated to the face")
-    print("     ~0.5 sigma beyond it, so each per-wall G carries a small geometric offset.)")
+    # (wall T is the occupancy-weighted surface-plane value while fluid T is
+    # extrapolated to the face ~0.5 sigma beyond it, so each per-wall G carries a
+    # small geometric offset -- methods detail, kept out of the student-facing text.)
+    print("    (reduced LJ units; G = J/dT per wall, hot and cold separate.)")
 
     # ---- optional: local heat-flux profile (only present if -var heatflux 1) ----
     if os.path.exists("day1_heatflux.profile"):

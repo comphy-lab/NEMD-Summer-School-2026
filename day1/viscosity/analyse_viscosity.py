@@ -36,14 +36,14 @@ def plot(z, vx, s, c, zwlo, zwhi, Tpec, pxz_series, eta, out="day1_viscosity.png
     zl = np.linspace(zwlo, zwhi, 50)
     axL.plot(s * zl + c, zl, color=RED, lw=1.4)
     axL.set_xlabel(r"$v_x(z)$"); axL.set_ylabel(r"$z\ (\sigma)$")
-    axL.set_title("shear rate: clean line")
+    axL.set_title(r"velocity profile $v_x(z)$")
     # centre panel: peculiar temperature T(z) = (2/3)(<ke> - 0.5 vx^2). Flat at a
     # gentle shear; shear hard and viscous heating humps it (hot centre), so the
     # channel is no longer isothermal and a single eta no longer describes it.
     axM.scatter(z, Tpec, s=14, color=RED, alpha=0.85)
     axM.axvline(zwlo, color="#aaa", ls=":", lw=0.8); axM.axvline(zwhi, color="#aaa", ls=":", lw=0.8)
     axM.set_xlabel(r"$z\ (\sigma)$"); axM.set_ylabel(r"fluid temperature $T(z)$")
-    axM.set_title("heating: flat or humped?")
+    axM.set_title(r"fluid temperature $T(z)$")
     # right panel: instantaneous p_xz (noisy) vs its RUNNING mean. The running mean
     # should flatten once eta has converged; if it is still drifting, it has not.
     k = np.arange(1, len(pxz_series) + 1)
@@ -51,7 +51,7 @@ def plot(z, vx, s, c, zwlo, zwhi, Tpec, pxz_series, eta, out="day1_viscosity.png
     axR.plot(k, pxz_series, color=GREY, lw=0.7, alpha=0.7, label="instantaneous")
     axR.plot(k, run, color=RED, lw=1.6, label=r"running mean $%+.3f$" % run[-1])
     axR.set_xlabel("sample"); axR.set_ylabel(r"$p_{xz}$")
-    axR.set_title(r"stress: is it converged?  ($\eta \approx %.2f$)" % eta)
+    axR.set_title(r"shear stress $p_{xz}$  ($\eta \approx %.2f$)" % eta)
     axR.legend(fontsize=8, frameon=True, facecolor="white", framealpha=0.9,
                edgecolor="none", loc="upper right")
     fig.tight_layout(); fig.savefig(out, dpi=150)
@@ -88,7 +88,7 @@ def main():
     v_face_bot, v_face_top = s * zwlo + c, s * zwhi + c
     pxz = pxz_series.mean()
 
-    print("\n[1] SHEAR VISCOSITY")
+    print("\nSheet 3: viscosity")
     print(f"    central shear rate dvx/dz = {s:+.4f}  (R^2={r2:.3f})")
     print(f"    no-slip reference 2*vwall/h = {ns_slope:+.4f}")
 
@@ -105,11 +105,11 @@ def main():
     print(f"    mean fluid-only shear stress pxz = {pxz:+.4f}")
     print(f"    viscosity eta = |pxz| / (dvx/dz) ~ {eta:.3f}")
     print("    (fluid-only virial, the stiff walls dropped -> less noisy than")
-    print("     the global pressure tensor; still a QUALITATIVE trend, shifting with")
-    print("     the -var seed and run length.)")
+    print("     the global pressure tensor; single-run values vary with the")
+    print("     seed and the run length.)")
 
     Tcen = Tpec[len(Tpec) // 2]
-    print(f"    peculiar T(z): walls ~{Tpec[0]:.2f} / {Tpec[-1]:.2f}, centre ~{Tcen:.2f}")
+    print(f"    fluid temperature T(z): walls ~{Tpec[0]:.2f} / {Tpec[-1]:.2f}, centre ~{Tcen:.2f}")
     print("    (flat under gentle shear; a hot-centre hump means viscous heating ->")
     print("     the channel is no longer isothermal, so a single eta no longer describes it.)")
     plot(z, vx, s, c, zwlo, zwhi, Tpec, pxz_series, eta)

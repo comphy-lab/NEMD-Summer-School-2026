@@ -29,9 +29,11 @@ def plot(z, vx, s, c, zwlo, zwhi, vwall, b, out="day1_slip.png"):
         return
     BLUE, RED = "#1F3A5F", "#B23A2E"
     fig, ax = plt.subplots(figsize=(4.0, 4.2))
-    ax.scatter(vx, z, s=14, color=BLUE, alpha=0.75, label="measured")
     zl = np.linspace(zwlo - 1.0, zwhi + 1.0, 50)
-    ax.plot(s * zl + c, zl, color=RED, lw=1.4, label="central fit")
+    ax.plot(2 * vwall / (zwhi - zwlo) * (zl - 0.5 * (zwlo + zwhi)), zl,
+            color="#999", ls="--", lw=1.0, label=r"no-slip reference ($b=0$)")
+    ax.scatter(vx, z, s=14, color=BLUE, alpha=0.75, label=r"measured $v_x(z)$")
+    ax.plot(s * zl + c, zl, color=RED, lw=1.4, label="central fit, extrapolated")
     ax.axhline(zwlo, color="#888", ls=":", lw=0.9); ax.axhline(zwhi, color="#888", ls=":", lw=0.9)
     ax.axvline(-vwall, color="#bbb", ls="--", lw=0.7); ax.axvline(vwall, color="#bbb", ls="--", lw=0.7)
     ax.set_xlabel(r"$v_x(z)$"); ax.set_ylabel(r"$z\ (\sigma)$")
@@ -74,12 +76,12 @@ def main():
     v_face_bot = s * zwlo + c                 # fluid velocity extrapolated to each wall face
     v_face_top = s * zwhi + c
 
-    print("\n[3] SLIP LENGTH")
+    print("\nSheet 2: slip length")
     print(f"    central shear rate dvx/dz = {s:+.4f}  (R^2={r2:.3f})")
     print(f"    no-slip reference 2*vwall/h = {ns_slope:+.4f}  (slope if the liquid")
     print("      stuck to the walls; slip makes the measured slope smaller)")
     if Tfluid is not None:
-        print(f"    fluid temperature (peculiar) = {Tfluid:.2f}  (set point 1.0)")
+        print(f"    fluid temperature = {Tfluid:.2f}  (set point 1.0)")
         if Tfluid > 1.3:
             print("      -> well above the set point: the shear has viscously heated the fluid")
 
