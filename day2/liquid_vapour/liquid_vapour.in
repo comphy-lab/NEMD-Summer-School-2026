@@ -26,8 +26,9 @@ variable tslab   index 20.0    # initial liquid-slab thickness (sigma), centred 
 variable bin     index 0.5     # z-profile bin width (sigma)
 variable dt      index 0.005   # timestep
 variable tdamp   index 1.0     # Nose-Hoover damping (tau)
+variable nevery  index 100     # output frequency
 variable nequil  index 10000   # equilibration steps
-variable nprod   index 500000  # production steps. LIVE default 100000; the shipped reference uses 500000
+variable nprod   index 10000  # production steps. LIVE default 100000; the shipped reference uses 500000
 variable seed    index 90187   # RNG seed for the initial velocities. The ensemble varies this per replica
 variable dump    index 0       # -var dump 1 -> write slab_traj.xyz (production) for view_domain / intrinsic
 variable localstress index 0   # -var localstress 1 -> also bin the diagonal pressure tensor for gamma
@@ -69,7 +70,7 @@ pair_coeff 1 1 1.0 1.0 ${rcut}
 
 neighbor 0.3 bin
 neigh_modify delay 0 every 1 check yes
-thermo 100
+thermo ${nevery}
 thermo_style custom step temp pe press pxx pyy pzz 
 
 velocity all create ${T} ${seed} mom yes rot no dist gaussian
@@ -104,17 +105,17 @@ unfix nvtall
 # ---- production observables (defined AFTER equilibration so they sample production only) ----
 variable nb  equal round(v_Lz/v_bin)
 variable dz  equal v_Lz/v_nb
-variable nrep  equal floor(v_nprod/100)        # ave/chunk: samples per block
-variable nfreq equal 100*v_nrep                # averaging window (<= nprod for nprod >= 100)
+variable nrep  equal floor(v_nprod/${nevery})        # ave/chunk: samples per block
+variable nfreq equal ${nevery}*v_nrep                # averaging window (<= nprod for nprod >= 100)
 compute cbinL fluid chunk/atom bin/1d z lower ${dz} units box
 
-fix     frho fluid ave/chunk 100 ${nrep} ${nfreq} cbinL density/number &
+fix     frho fluid ave/chunk ${nevery} ${nrep} ${nfreq} cbinL density/number &
         file ${outdir}/day2_density.profile
 
 if "${localstress} > 0" then &
   "compute virial fluid stress/atom NULL pair" &
   "compute kinetic fluid stress/atom NULL ke" &
-  "fix     Pxy  fluid ave/chunk 100 ${nrep} ${nfreq} cbinL c_virial[1] c_virial[2] c_virial[3] c_kinetic[1] c_kinetic[2] c_kinetic[3]  norm none file ${outdir}/day2_stress.profile"
+  "fix     Pxy  fluid ave/chunk ${nevery} ${nrep} ${nfreq} cbinL c_virial[1] c_virial[2] c_virial[3] c_kinetic[1] c_kinetic[2] c_kinetic[3]  norm none file ${outdir}/day2_stress.profile"
 
 #Production run
 fix nve all nve

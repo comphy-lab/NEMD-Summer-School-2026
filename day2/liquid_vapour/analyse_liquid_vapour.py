@@ -74,8 +74,6 @@ if __name__ == "__main__":
     x_fit = np.linspace(np.min(x), np.max(x), 100)
     y_fit = model(x_fit, *params)
     
-    ### ddockar contribution end
-
     #Plot density
     rho = np.mean(rho,0)
     plt.plot(z, rho,'o') 
