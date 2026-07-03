@@ -58,7 +58,8 @@ def main():
 
     try:
         import matplotlib
-        matplotlib.use("Agg")
+        if not os.environ.get("DISPLAY"):
+            matplotlib.use("Agg")     # headless: just save the PNG
         import matplotlib.pyplot as plt
     except ImportError:
         print("    (matplotlib not found - skipping the plot)")
@@ -73,6 +74,8 @@ def main():
               edgecolor="none", loc="upper right")
     fig.tight_layout(); fig.savefig(OUT, dpi=150)
     print(f"    domain -> {OUT}")
+    if os.environ.get("DISPLAY"):     # ssh -X: also pop the figure up on screen
+        plt.show()
 
 
 if __name__ == "__main__":

@@ -178,7 +178,7 @@ def main():
 
     try:
         import matplotlib
-        if not args.watch:
+        if not args.watch and not os.environ.get("DISPLAY"):
             matplotlib.use("Agg")          # headless: just save the PNG
         import matplotlib.pyplot as plt
     except ImportError:
@@ -197,6 +197,8 @@ def main():
         fig.tight_layout(rect=(0, 0, 1, 0.97))
         fig.savefig(args.out, dpi=150)
         print(f"overview -> {args.out}")
+        if os.environ.get("DISPLAY"):  # ssh -X: also pop the overview up on screen
+            plt.show()
         return
 
     # live mode: needs an interactive backend; if there is no display, degrade to
