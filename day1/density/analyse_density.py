@@ -28,7 +28,7 @@ def plot(z, rho, rho_bulk, rho_peak, out="day1_density.png"):
     ipk = rho.argmax()
     plt.plot(rho[ipk], z[ipk], "o", color="#B23A2E", ms=6,
              label=r"$\rho_{\mathrm{peak}} \approx %.2f$" % rho_peak)
-    plt.legend(fontsize=8, frameon=False, loc="center right")
+    plt.legend(fontsize=8, frameon=False, loc="center left")
     plt.xlabel(r"number density $\rho(z)$")
     plt.ylabel(r"$z\ (\sigma)$")
     plt.title("density profile across the channel")
@@ -36,7 +36,10 @@ def plot(z, rho, rho_bulk, rho_peak, out="day1_density.png"):
     plt.savefig(out, dpi=150)
     print(f"    plot -> {out}")
     if os.environ.get("DISPLAY"):     # ssh -X: also pop the figure up on screen
-        plt.show()
+        try:
+            plt.show()
+        except KeyboardInterrupt:      # Ctrl-C with the window up: fine, the file is already saved
+            pass
 
 def main():
     if not os.path.exists("day1_density.profile"):
