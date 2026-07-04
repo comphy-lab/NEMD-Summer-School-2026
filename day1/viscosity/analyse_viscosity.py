@@ -100,8 +100,8 @@ def main():
     if abs(s) > tol * ns_slope or max(abs(v_face_bot), abs(v_face_top)) > tol * vwall:
         print(f"    fluid velocity at the walls = {v_face_bot:+.3f} / {v_face_top:+.3f} "
               f"(wall speed +/-{vwall:g})")
-        sys.exit("    FAIL: the fluid is shearing faster than the walls drive it -> unphysical\n"
-                 "    (check the drive-velocity units / steady state); eta would be meaningless.")
+        sys.exit("    FAIL: the fluid is shearing faster than the walls move -> unphysical\n"
+                 "    (check the wall-speed units / steady state); eta would be meaningless.")
 
     eta = abs(pxz) / abs(s) if abs(s) > 1e-9 else float("nan")
     print(f"    mean shear stress pxz = {pxz:+.4f}")

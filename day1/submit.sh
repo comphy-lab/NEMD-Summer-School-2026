@@ -73,6 +73,6 @@ module load lammps
 srun --hint=nomultithread --distribution=block:block lmp -in$LMP_ARGS
 EOF
 )
-echo "Submitted job $JOBID. Wait until 'squeue --me' no longer lists it, THEN run the analyser:"
+echo "Submitted job $JOBID. Wait until 'squeue --me' no longer lists it, then run the analysis script:"
 echo "    python analyse_${IN%.in}.py"
 echo "(running it before the job finishes reports 'not found'.)"

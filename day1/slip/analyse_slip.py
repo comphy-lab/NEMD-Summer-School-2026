@@ -108,7 +108,7 @@ def main():
         sys.exit(f"    FAIL: the central slope exceeds the no-slip reference by more than "
                  f"{(tol-1)*100:.0f}% -> unphysical.\n"
                  "    A few percent can be a pinned wetting layer or viscous heating, but this\n"
-                 "    much is a setup error (check the drive-velocity units / steady state),\n"
+                 "    much is a setup error (check the wall-speed units / steady state),\n"
                  "    not a slip length.")
 
     b = vwall / abs(s) - h / 2               # symmetric slip length (walls are equivalent)

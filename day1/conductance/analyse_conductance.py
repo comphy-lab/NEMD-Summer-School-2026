@@ -147,7 +147,7 @@ def main():
     fluid = (z > z_wall_bot + LAYER) & (z < z_wall_top - LAYER)
     if fluid.sum() < 3:
         sys.exit("fluid-interior window < 3 bins (channel too thin for a conduction "
-                 "fit) - widen the box (Lz_t) or reduce LAYER.")
+                 "fit) - widen the box (-var Lz_t).")
     sT, bT, r2T = linfit(z[fluid], T[fluid])
     Tf_bot = sT * z_wall_bot + bT
     Tf_top = sT * z_wall_top + bT

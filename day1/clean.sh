@@ -34,5 +34,5 @@ done
 if [ "$dry" = 1 ]; then
   echo "(dry run -- nothing deleted)"
 else
-  echo "cleaned: regeneratable Day-1 files removed (source and the handout PDF kept)."
+  echo "cleaned: generated Day-1 files removed (source files kept)."
 fi
