@@ -195,7 +195,7 @@ def main():
     # is nearly blind to steadiness. A 5% imbalance threshold is used here; larger
     # values mean the run has not reached steady state and should be lengthened.
     if imbal > 0.05:
-        print(f"    WARNING: bath powers imbalanced {100*imbal:.1f}% (a steady run sits near 0%)")
+        print(f"    WARNING: the bath powers do not balance (imbalance {100*imbal:.1f}%; ~0% when steady)")
         print("             -> energy in != out; the run is not steady. Lengthen nequil (~40000).")
     if min(r2lo, r2hi) < 0.95:
         print("    WARNING: the cumulative-heat curves are far from straight lines "
