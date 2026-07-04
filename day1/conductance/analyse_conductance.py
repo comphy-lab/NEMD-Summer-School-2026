@@ -175,8 +175,10 @@ def main():
           f"   J={J_bot:.4f} -> G_bot={G_bot:.3f}")
     print(f"    top:    T_wall={Tw_top:.3f}  T_fluid={Tf_top:.3f}  dT={dT_top:.3f}"
           f"   J={J_top:.4f} -> G_top={G_top:.3f}")
-    print(f"    bath powers |Q_bot|={abs(p_bot):.4f} |Q_top|={abs(p_top):.4f} "
-          f"(R^2 {r2lo:.3f}/{r2hi:.3f}); imbalance {100*imbal:.1f}%   (R_K = 1/G)")
+    p_hot, p_cold = (p_bot, p_top) if Tbot > Ttop else (p_top, p_bot)
+    print(f"    heat added at the hot wall / removed at the cold wall = "
+          f"{abs(p_hot):.4f} / {abs(p_cold):.4f} per unit time")
+    print(f"    imbalance {100*imbal:.1f}%   (energy in equals energy out in a steady run)")
 
     # ---- checks -------------------------------------------------------------
     # the hot wall must sit ABOVE the fluid it heats; the cold wall below. With
@@ -195,8 +197,8 @@ def main():
     # is nearly blind to steadiness. A 5% imbalance threshold is used here; larger
     # values mean the run has not reached steady state and should be lengthened.
     if imbal > 0.05:
-        print(f"    WARNING: the bath powers do not balance (imbalance {100*imbal:.1f}%; ~0% when steady)")
-        print("             -> energy in != out; the run is not steady. Lengthen nequil (~40000).")
+        print(f"    WARNING: energy in does not equal energy out (imbalance {100*imbal:.1f}%)")
+        print("             -> the run is not steady; lengthen nequil (~40000).")
     if min(r2lo, r2hi) < 0.95:
         print("    WARNING: the cumulative-heat curves are far from straight lines "
               f"(linear-fit R^2 {r2lo:.3f}/{r2hi:.3f}) -> the run is not steady; lengthen nequil.")

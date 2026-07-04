@@ -87,7 +87,7 @@ def text_summary():
             any_data = True
     h = read_series("conductance/day1_heat.dat", 3)
     if h is not None:
-        print(f"Sheet 4  bath heat last q_bot/q_top = {h[1][-1]:+.3f} / {h[2][-1]:+.3f} "
+        print(f"Sheet 4  cumulative heat last q_bot/q_top = {h[1][-1]:+.3f} / {h[2][-1]:+.3f} "
               f"({len(h[0])} samples)")
         any_data = True
 
