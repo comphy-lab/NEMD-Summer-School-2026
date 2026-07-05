@@ -121,7 +121,8 @@ def plot(zc, vx, vxfit, rho, Pxz, eta, maskhw, plateau, wmeas, tag, wide, out=No
     out = out or f"poiseuille_w{tag}.png"
     try:
         import matplotlib
-        matplotlib.use("Agg")
+        if not os.environ.get("DISPLAY"):
+            matplotlib.use("Agg")     # headless: just save the PNG
         import matplotlib.pyplot as plt
     except ImportError:
         print("    (matplotlib not found - skipping the plot)")
@@ -159,6 +160,11 @@ def plot(zc, vx, vxfit, rho, Pxz, eta, maskhw, plateau, wmeas, tag, wide, out=No
     fig.suptitle(title, fontsize=10)
     fig.tight_layout(rect=(0, 0, 1, 0.96)); fig.savefig(out, dpi=150)
     print(f"    plot -> {out}")
+    if os.environ.get("DISPLAY"):     # ssh -X: also pop the figure up on screen
+        try:
+            plt.show()
+        except KeyboardInterrupt:      # Ctrl-C with the window up: fine, the file is already saved
+            pass
 
 
 def main():
