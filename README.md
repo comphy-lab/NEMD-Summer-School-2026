@@ -5,7 +5,7 @@ University of Edinburgh. The school runs over two afternoons, each a set of smal
 simulations with short Python analysis scripts, run on Cirrus (EPCC):
 
 - **Day 1 — Solid–Liquid Interfaces** (`day1/`) — available now
-- **Day 2 — Nanoscale Hydrodynamics & Liquid–Vapour Interfaces** (`day2/`) — added closer to the event
+- **Day 2 — Nanoscale Hydrodynamics & Liquid–Vapour Interfaces** (`day2-slitpore/` and `day2/`)
 
 ## Day 1 — Solid–Liquid Interfaces
 
@@ -21,6 +21,19 @@ one LAMMPS simulation plus a short Python analysis script:
 
 Every case includes the shared channel setup with `include ../shared_setup.lmp`, and the analysis
 scripts share their output-file parsers via `../lammps_io.py`.
+
+## Day 2 — the slit-pore (Sheet 1)
+
+Sheet 1 of Day 2 measures the local viscosity profile of a Lennard-Jones liquid confined in a
+slit-pore and driven by a body force (Poiseuille flow):
+
+| Measurement | Folder | Runs | Analyses |
+|---|---|---|---|
+| Local viscosity / breakdown of Newton's law | `day2-slitpore/poiseuille/` | `poiseuille.in` | `analyse_poiseuille.py` |
+
+Run it the same way as Day 1: `cd day2-slitpore/poiseuille`, then `../submit.sh poiseuille.in`
+(wide pore) and `../submit.sh poiseuille.in -var width 4` (narrow pore), then
+`python analyse_poiseuille.py`. The liquid–vapour and intrinsic-interface exercises are in `day2/`.
 
 ## Getting onto Cirrus
 
