@@ -8,10 +8,10 @@
 #     cd slip        && ../submit.sh slip.in -var vwall 2.0
 #     cd conductance && ../submit.sh conductance.in
 #
-# It writes a short SLURM job for you and sends it to the queue with sbatch.
+# It writes a short SLURM job and sends it to the queue with sbatch.
 # Check progress with `squeue --me`; LAMMPS runs on a compute node and its output
-# lands in slurm-<jobid>.out.  When the job has finished, run the matching
-# analyser, e.g.  python analyse_density.py
+# lands in slurm-<jobid>.out.  When the job has finished, run the corresponding
+# analysis script, e.g.  python analyse_density.py
 set -e
 
 if [ "$#" -lt 1 ]; then

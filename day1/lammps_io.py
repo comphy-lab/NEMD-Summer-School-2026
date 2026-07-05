@@ -1,13 +1,12 @@
-"""Shared output-parsing helpers for the Day-1 LJ-channel analysers.
+"""Shared output parsers for the Day-1 LJ-channel analysers.
 
-These three readers are the shared output parsers for the analysers, kept in
-one place so the four
-`analyse_<case>.py` scripts parse LAMMPS output identically. The physics
-(conductance G, the Couette/slip fit, the viscosity) stays in each case folder.
+The three readers are kept in one file so the four `analyse_<case>.py`
+scripts parse LAMMPS output identically. The physics (conductance G, the
+Couette/slip fit, the viscosity) is in each case folder.
 
-Import it with the same reach-up convention you already use to run a case
-(`cd density && python analyse_density.py`, which `include ../shared_setup.lmp`
-mirrors on the LAMMPS side). At the top of each analyser:
+Each analyser runs from inside its case folder (`cd density &&
+python analyse_density.py`) and imports this file from the parent
+directory. At the top of each analyser:
 
     import os, sys
     sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -21,7 +20,8 @@ import tempfile
 import numpy as np
 
 # Point matplotlib's cache at a writable dir BEFORE any analyser imports matplotlib,
-# so a non-writable $HOME on HPC does not warn and rebuild the font cache (~10 s) each run.
+# so matplotlib does not warn and rebuild the font cache (~10 s) each run when $HOME
+# is not writable on HPC.
 # Per-user path: on a shared login node a fixed /tmp name is owned by whoever ran first,
 # and everyone else gets a not-writable warning on every run.
 os.environ.setdefault("MPLCONFIGDIR",
@@ -82,7 +82,7 @@ def read_params(path):
     """Read a `key value` text file (day1_params.txt) -> {key: float}.
 
     Lines whose second token is non-numeric are skipped, so header/comment
-    lines do no harm."""
+    lines are ignored."""
     p = {}
     with open(path) as f:
         for l in f:
@@ -100,7 +100,7 @@ def read_timeseries(path, col=None):
 
     col=None -> (col0, col1, col2) arrays (timestep + first two quantities),
                 exiting if there are < 2 data rows (a slope needs >= 2 points).
-    col=int  -> just that column as a 1-D array (col 1 = the first quantity).
+    col=int  -> that column as a 1-D array (col 1 = the first quantity).
 
     Short lines, a final line left un-terminated (a run still writing / killed
     mid-write), and tokens cut mid-number are skipped rather than raising."""
