@@ -117,7 +117,7 @@ def analyse_one(prof_path, par_path, tag):
 
 
 def plot(zc, vx, vxfit, rho, Pxz, eta, maskhw, plateau, wmeas, tag, wide, out=None):
-    out = out or f"poiseuille_w{tag}.png"
+    out = out or f"day2_w{tag}.png"
     try:
         import matplotlib
         if not os.environ.get("DISPLAY"):
@@ -161,13 +161,13 @@ def plot(zc, vx, vxfit, rho, Pxz, eta, maskhw, plateau, wmeas, tag, wide, out=No
 
 
 def main():
-    profs = sorted(glob.glob("poiseuille_w*.profile"))
+    profs = sorted(glob.glob("day2_w*.profile"))
     if not profs:
-        sys.exit("no poiseuille_w*.profile here. Run `lmp_serial -in poiseuille.in` "
+        sys.exit("no day2_w*.profile here. Run `lmp_serial -in poiseuille.in` "
                  "(and `-var width 4`) first, from inside this folder.")
     for prof in profs:
-        tag = prof[len("poiseuille_w"):-len(".profile")]
-        par = f"poiseuille_w{tag}.params.txt"
+        tag = prof[len("day2_w"):-len(".profile")]
+        par = f"day2_w{tag}.params.txt"
         if not os.path.exists(par):
             print(f"  ({par} missing - skipping {prof})")
             continue

@@ -28,7 +28,7 @@ variable nprod  index 200000    # production steps (multiple of 100)
 # clear this width's outputs at the start, so a re-run after an interrupted/failed run
 # cannot leave stale poiseuille_w${width}.* for the analyser to read as this run's result.
 # (submit.sh does this for the SLURM path; this also covers the bare `lmp_serial -in` path.)
-shell rm -f poiseuille_w${width}.profile poiseuille_w${width}.params.txt poiseuille_w${width}.png poiseuille_w${width}_traj.xyz
+shell rm -f day2_w${width}.profile day2_w${width}.params.txt day2_w${width}.png day2_w${width}_traj.xyz
 
 include ./shared_setup.lmp
 
@@ -52,22 +52,22 @@ variable binw equal 0.1                                # velocity-profile bin wi
 variable nvb  equal round(lz/v_binw)                   # key off the REAL box length lz (Lz is the pre-cap construction box)
 variable dzv  equal lz/v_nvb
 compute cvx fluid chunk/atom bin/1d z lower ${dzv} units box
-fix     fvx fluid ave/chunk 100 ${nrep} ${nfreq} cvx vx density/mass file poiseuille_w${width}.profile
+fix     fvx fluid ave/chunk 100 ${nrep} ${nfreq} cvx vx density/mass file day2_w${width}.profile
 
 # geometry + drive written for the analyser, WIDTH-TAGGED so the w=10 and w=4
 # datasets coexist for the wide-vs-narrow comparison at the end of the sheet.
-print "Lz $(lz)"           file   poiseuille_w${width}.params.txt
-print "wall_th ${wall_th}" append poiseuille_w${width}.params.txt
-print "width ${width}"      append poiseuille_w${width}.params.txt
-print "w_meas ${wmeas}"     append poiseuille_w${width}.params.txt
-print "z_bot_inner ${zbi}" append poiseuille_w${width}.params.txt
-print "z_top_inner ${zti}" append poiseuille_w${width}.params.txt
-print "gforce ${gforce}"   append poiseuille_w${width}.params.txt
-print "binw ${binw}"       append poiseuille_w${width}.params.txt
+print "Lz $(lz)"           file   day2_w${width}.params.txt
+print "wall_th ${wall_th}" append day2_w${width}.params.txt
+print "width ${width}"      append day2_w${width}.params.txt
+print "w_meas ${wmeas}"     append day2_w${width}.params.txt
+print "z_bot_inner ${zbi}" append day2_w${width}.params.txt
+print "z_top_inner ${zti}" append day2_w${width}.params.txt
+print "gforce ${gforce}"   append day2_w${width}.params.txt
+print "binw ${binw}"       append day2_w${width}.params.txt
 
 # optional orientation trajectory (production only; off by default, -var dump 1).
 if "${dump} > 0" then &
-  "dump dvmd all xyz 1000 poiseuille_w${width}_traj.xyz" &
+  "dump dvmd all xyz 1000 day2_w${width}_traj.xyz" &
   "dump_modify dvmd element Ar Cu Cu sort id"
 
 run ${nprod}
