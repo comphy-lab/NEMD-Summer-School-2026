@@ -82,7 +82,7 @@ if [ ! -x "\$LMP_BIN" ]; then
     exit 1
 fi
 echo "\$LMP_BIN"
-srun --hint=nomultithread --distribution=block:block "\$LMP_BIN" -in$LMP_ARGS
+srun --export=ALL --hint=nomultithread --distribution=block:block "\$LMP_BIN" -in$LMP_ARGS
 EOF
 )
 echo "Submitted job $JOBID. Wait until 'squeue --me' no longer lists it, then run the analysis script:"
