@@ -1,0 +1,97 @@
+# =====================================================================
+#  NEMD Summer School 2026 - Day 1 extension
+#  MEASUREMENT: wetting dependence of interfacial thermal conductance
+#
+#  This is a Vatsal/local extension of conductance.in. It repeats the
+#  Kapitza conductance measurement for several wall-fluid LJ attractions
+#  eps_wf. Larger eps_wf means a more attractive/more wetting wall; smaller
+#  eps_wf means a less wetting wall. The observable is whether the interfacial
+#  temperature jump dT, and therefore G = J/dT, changes with wetting.
+#
+#  Run from this folder via the Cirrus wrapper:
+#     ../submit.sh conductance-wetting.in
+#     python analyse_conductance_wetting.py
+#
+#  Optional overrides:
+#     ../submit.sh conductance-wetting.in -var wet1 0.3 -var wet2 0.6 -var wet3 1.2
+#     ../submit.sh conductance-wetting.in -var nprod 80000 -var nequil 80000
+#
+#  Outputs are day1_wetting_*. They intentionally do not overwrite the base
+#  day1_Tz.profile / day1_heat.dat files used by conductance.in.
+# =====================================================================
+
+# ---- case parameters (this measurement's settings; -var still overrides) ----
+variable Tbot   index 1.3      # hot bottom wall
+variable Ttop   index 0.9      # cold top wall -> built-in thermal gradient
+variable nequil index 40000    # still walls conduct slowly: longer equilibration
+variable nprod  index 40000    # production steps (multiple of 100)
+
+# Three wetting strengths to compare. eps_wf is consumed by shared_setup.lmp.
+variable wet1 index 0.3        # weak wall-fluid attraction: poorly wetting
+variable wet2 index 0.6        # base Day-1 value
+variable wet3 index 1.2        # stronger wall-fluid attraction: more wetting
+
+include ../shared_setup.lmp
+
+# =====================================================================
+#  MEASUREMENT: wetting-dependent Kapitza conductance
+# =====================================================================
+
+variable dTwall equal abs(v_Ttop-v_Tbot)
+if "${dTwall} < 1.0e-9" then &
+  "print 'ERROR: conductance-wetting needs a thermal gradient (got Tbot == Ttop == ${Tbot}).'" &
+  "print '       Give the walls different temperatures, e.g. -var Ttop 0.7'" &
+  "quit 1"
+
+# Shared geometry and analysis parameters.
+variable binwT equal 0.5
+variable nbins equal round(v_Lz/v_binwT)
+variable dzt   equal v_Lz/v_nbins
+variable area  equal v_Lx*v_Ly
+
+print "# wetting conductance sweep" file day1_wetting_cases.txt
+print "# case eps_wf Tbot Ttop" append day1_wetting_cases.txt
+
+# Each rerun starts from the same post-minimisation configuration created by
+# shared_setup.lmp, changes only eps_wf, re-equilibrates, then writes separate
+# averaged outputs. We do not average across cases in LAMMPS; the Python script
+# reads each case independently and compares the fitted conductances.
+
+variable iw loop 3
+variable eps_current index ${wet1} ${wet2} ${wet3}
+
+label wet_loop
+print "case${iw} ${eps_current} ${Tbot} ${Ttop}" append day1_wetting_cases.txt
+
+# Update both wall-fluid pair coefficients for the current wetting strength.
+pair_coeff 1 2 ${eps_current} 1.0
+pair_coeff 1 3 ${eps_current} 1.0
+
+run ${nequil}
+reset_timestep 0
+
+compute  ctz_${iw}   all chunk/atom bin/1d z lower ${dzt} units box
+compute  biasT_${iw} all temp/profile 1 0 0 z ${nbins}
+fix      ftz_${iw}   all ave/chunk 100 ${nrep} ${nfreq} ctz_${iw} temp bias biasT_${iw} &
+         file day1_wetting_case${iw}_Tz.profile
+fix      fheat_${iw} all ave/time 100 1 100 f_bbot f_btop file day1_wetting_case${iw}_heat.dat
+
+print "Lz ${Lz}"             file   day1_wetting_case${iw}_params.txt
+print "wall_th ${wall_th}"   append day1_wetting_case${iw}_params.txt
+print "area ${area}"         append day1_wetting_case${iw}_params.txt
+print "dt ${dt}"             append day1_wetting_case${iw}_params.txt
+print "Tbot ${Tbot}"         append day1_wetting_case${iw}_params.txt
+print "Ttop ${Ttop}"         append day1_wetting_case${iw}_params.txt
+print "eps_wf ${eps_current}" append day1_wetting_case${iw}_params.txt
+
+run ${nprod}
+
+unfix ftz_${iw}
+unfix fheat_${iw}
+uncompute ctz_${iw}
+uncompute biasT_${iw}
+
+next iw eps_current
+jump SELF wet_loop
+
+print "Done. Analyse with:  python analyse_conductance_wetting.py"
