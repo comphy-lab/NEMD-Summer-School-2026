@@ -54,7 +54,7 @@ rm -f day1_*.profile day1_*.dat day1_*.txt day1_*.png day1_*.xyz log.lammps
 printf -v LMP_ARGS ' %q' "$@"   # input + any -var args, shell-quoted so spaces/globs survive
 
 JOBID=$(sbatch --parsable <<EOF
-#!/bin/bash
+#!/bin/bash -l
 #SBATCH --job-name=day1
 #SBATCH --account=tc075
 #SBATCH --partition=standard
