@@ -62,7 +62,7 @@ JOBID=$(sbatch --parsable <<EOF
 #SBATCH --nodes=1
 #SBATCH --tasks-per-node=1
 #SBATCH --cpus-per-task=1
-#SBATCH --time=00:20:00
+#SBATCH --time=01:00:00
 #SBATCH --export=none
 
 # Clean job environment (--export=none) so the Python modules you loaded for the
