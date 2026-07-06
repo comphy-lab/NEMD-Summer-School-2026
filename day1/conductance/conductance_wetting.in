@@ -58,9 +58,9 @@ print "# case eps_wf Tbot Ttop" append day1_wetting_cases.txt
 # reads each case independently and compares the fitted conductances.
 
 variable iw loop 3
-variable eps_current index ${wet1} ${wet2} ${wet3}
 
 label wet_loop
+variable eps_current equal v_wet${iw}
 print "case${iw} ${eps_current} ${Tbot} ${Ttop}" append day1_wetting_cases.txt
 
 # Update both wall-fluid pair coefficients for the current wetting strength.
@@ -91,7 +91,8 @@ unfix fheat_${iw}
 uncompute ctz_${iw}
 uncompute biasT_${iw}
 
-next iw eps_current
+variable eps_current delete
+next iw
 jump SELF wet_loop
 
 print "Done. Analyse with:  python analyse_conductance_wetting.py"
