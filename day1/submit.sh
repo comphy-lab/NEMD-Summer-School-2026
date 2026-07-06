@@ -72,7 +72,8 @@ export OMP_NUM_THREADS=1
 
 source /etc/profile
 source /etc/profile.d/modules.sh
-module load lammps
+module use /work/y07/shared/cirrus-ex/cirrus-ex-software/spack-cirrus-ex/0.2/cirrus-ex-cse/modules/Core
+module load lammps/20250612
 command -v lmp
 srun --hint=nomultithread --distribution=block:block lmp -in$LMP_ARGS
 EOF
