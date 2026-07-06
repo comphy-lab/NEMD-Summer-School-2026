@@ -16,4 +16,4 @@ export OMP_NUM_THREADS=1
 module load lammps
 
 # Launch the parallel job
-srun -n 32 --hint=nomultithread --distribution=block:block lmp -var rcut 0 -var dump 10 -var T 0.82 -var Lz_t 48 -var Lx_t 24 -var Ly_t 24 -var tslab 12 -var rho_l 0.746 -var rho_v 0.001 -var fmt lammps -var nprod 100000 < liquid_vapour.in
+srun -n 32 --hint=nomultithread --distribution=block:block lmp -var rcut 0 -var dump 10 -var T 0.82 -var Lz_t 48 -var Lx_t 24 -var Ly_t 24 -var tslab 12 -var rho_l 0.746 -var rho_v 0.001 -var fmt lammps -var nprod 1000000 < liquid_vapour.in
