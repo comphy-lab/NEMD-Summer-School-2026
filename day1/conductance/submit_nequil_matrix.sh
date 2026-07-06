@@ -33,10 +33,11 @@ JOBID=$(sbatch --parsable <<EOF
 #SBATCH --time=01:00:00
 #SBATCH --export=none
 
-set -euo pipefail
+set -eo pipefail
 export OMP_NUM_THREADS=1
 
 source /etc/profile
+set -u
 module use /work/y07/shared/cirrus-ex/cirrus-ex-software/spack-cirrus-ex/0.2/cirrus-ex-cse/modules/Core
 module load lammps/20250612
 LMP_BIN="\$(command -v lmp || true)"
