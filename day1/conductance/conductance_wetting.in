@@ -9,12 +9,12 @@
 #  temperature jump dT, and therefore G = J/dT, changes with wetting.
 #
 #  Run from this folder via the Cirrus wrapper:
-#     ../submit.sh conductance-wetting.in
+#     ../submit.sh conductance_wetting.in
 #     python analyse_conductance_wetting.py
 #
 #  Optional overrides:
-#     ../submit.sh conductance-wetting.in -var wet1 0.3 -var wet2 0.6 -var wet3 1.2
-#     ../submit.sh conductance-wetting.in -var nprod 80000 -var nequil 80000
+#     ../submit.sh conductance_wetting.in -var wet1 0.3 -var wet2 0.6 -var wet3 1.2
+#     ../submit.sh conductance_wetting.in -var nprod 80000 -var nequil 80000
 #
 #  Outputs are day1_wetting_*. They intentionally do not overwrite the base
 #  day1_Tz.profile / day1_heat.dat files used by conductance.in.
@@ -39,7 +39,7 @@ include ../shared_setup.lmp
 
 variable dTwall equal abs(v_Ttop-v_Tbot)
 if "${dTwall} < 1.0e-9" then &
-  "print 'ERROR: conductance-wetting needs a thermal gradient (got Tbot == Ttop == ${Tbot}).'" &
+  "print 'ERROR: conductance_wetting needs a thermal gradient (got Tbot == Ttop == ${Tbot}).'" &
   "print '       Give the walls different temperatures, e.g. -var Ttop 0.7'" &
   "quit 1"
 

@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """Day 1 extension - wetting dependence of Kapitza conductance.
 
-Reads the case files written by conductance-wetting.in and compares the
+Reads the case files written by conductance_wetting.in and compares the
 interfacial conductance G = J / dT as the wall-fluid LJ attraction eps_wf is
 varied. Larger eps_wf is the simple Day-1 proxy for a more wetting wall.
 
 Run after:
 
-    ../submit.sh conductance-wetting.in
+    ../submit.sh conductance_wetting.in
     python analyse_conductance_wetting.py
 """
 import os
@@ -38,7 +38,7 @@ def discover_cases():
     fn = "day1_wetting_cases.txt"
     if not os.path.exists(fn):
         sys.exit(
-            "day1_wetting_cases.txt not found. Run `../submit.sh conductance-wetting.in` first."
+            "day1_wetting_cases.txt not found. Run `../submit.sh conductance_wetting.in` first."
         )
     cases = []
     with open(fn, encoding="utf-8") as handle:
