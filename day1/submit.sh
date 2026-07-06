@@ -73,7 +73,14 @@ export OMP_NUM_THREADS=1
 source /etc/profile
 module use /work/y07/shared/cirrus-ex/cirrus-ex-software/spack-cirrus-ex/0.2/cirrus-ex-cse/modules/Core
 module load lammps/20250612
-LMP_BIN="$(command -v lmp)"
+LMP_BIN="$(command -v lmp || true)"
+if [ -z "$LMP_BIN" ]; then
+    LMP_BIN="/mnt/lustre/e1000/home/y07/shared/cirrus-ex/cirrus-ex-software/spack-cirrus-ex/0.2/cirrus-ex-cse/opt/linux-rhel9-zen5/gcc-14.2/lammps-20250612-aqjcjka5m7cg2ck5auwcfqewujlbjpkf/bin/lmp"
+fi
+if [ ! -x "$LMP_BIN" ]; then
+    echo "error: LAMMPS binary not found or not executable: $LMP_BIN" >&2
+    exit 1
+fi
 echo "$LMP_BIN"
 srun --hint=nomultithread --distribution=block:block "$LMP_BIN" -in$LMP_ARGS
 EOF
