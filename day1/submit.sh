@@ -67,9 +67,13 @@ JOBID=$(sbatch --parsable <<EOF
 
 # Clean job environment (--export=none) so the Python modules you loaded for the
 # analysers cannot leak in and clash with 'module load lammps'.
+set -e
 export OMP_NUM_THREADS=1
 
+source /etc/profile
+source /etc/profile.d/modules.sh
 module load lammps
+command -v lmp
 srun --hint=nomultithread --distribution=block:block lmp -in$LMP_ARGS
 EOF
 )
