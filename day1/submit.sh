@@ -73,8 +73,9 @@ export OMP_NUM_THREADS=1
 source /etc/profile
 module use /work/y07/shared/cirrus-ex/cirrus-ex-software/spack-cirrus-ex/0.2/cirrus-ex-cse/modules/Core
 module load lammps/20250612
-command -v lmp
-srun --hint=nomultithread --distribution=block:block lmp -in$LMP_ARGS
+LMP_BIN="$(command -v lmp)"
+echo "$LMP_BIN"
+srun --hint=nomultithread --distribution=block:block "$LMP_BIN" -in$LMP_ARGS
 EOF
 )
 echo "Submitted job $JOBID. Wait until 'squeue --me' no longer lists it, then run the analysis script:"
