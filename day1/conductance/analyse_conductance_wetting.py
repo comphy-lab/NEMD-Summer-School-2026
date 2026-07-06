@@ -111,9 +111,21 @@ def analyse_case(name, eps_wf):
         "G_bot": G_bot,
         "G_top": G_top,
         "G_mean": 0.5 * (G_bot + G_top),
+        "dT_mean": 0.5 * (dT_bot + dT_top),
         "imbalance": imbal,
         "r2_heat_bot": r2lo,
         "r2_heat_top": r2hi,
+        "z": z,
+        "N": N,
+        "T": T,
+        "z_wall_bot": z_wall_bot,
+        "z_wall_top": z_wall_top,
+        "Tw_bot": Tw_bot,
+        "Tw_top": Tw_top,
+        "Tf_bot": Tf_bot,
+        "Tf_top": Tf_top,
+        "fit_slope": sT,
+        "fit_intercept": bT,
     }
 
 
@@ -126,6 +138,7 @@ def write_table(results, out="day1_wetting_summary.csv"):
         "G_mean",
         "dT_bot",
         "dT_top",
+        "dT_mean",
         "J_bot",
         "J_top",
         "imbalance",
@@ -144,6 +157,7 @@ def write_table(results, out="day1_wetting_summary.csv"):
                         f"{row['G_mean']:.6g}",
                         f"{row['dT_bot']:.6g}",
                         f"{row['dT_top']:.6g}",
+                        f"{row['dT_mean']:.6g}",
                         f"{row['J_bot']:.6g}",
                         f"{row['J_top']:.6g}",
                         f"{row['imbalance']:.6g}",
@@ -155,7 +169,7 @@ def write_table(results, out="day1_wetting_summary.csv"):
     print(f"    summary -> {out}")
 
 
-def plot(results, out="day1_wetting_conductance.png"):
+def import_pyplot():
     try:
         import matplotlib
 
@@ -163,9 +177,23 @@ def plot(results, out="day1_wetting_conductance.png"):
             matplotlib.use("Agg")
         import matplotlib.pyplot as plt
     except ImportError:
-        print("    (matplotlib not found - skipping the wetting plot)")
-        return
+        return None
+    return plt
 
+
+def maybe_show(plt):
+    if os.environ.get("DISPLAY"):
+        try:
+            plt.show()
+        except KeyboardInterrupt:
+            pass
+
+
+def plot_conductance(results, out="day1_wetting_conductance.png"):
+    plt = import_pyplot()
+    if plt is None:
+        print("    (matplotlib not found - skipping the conductance plot)")
+        return
     eps = np.array([r["eps_wf"] for r in results])
     g_bot = np.array([r["G_bot"] for r in results])
     g_top = np.array([r["G_top"] for r in results])
@@ -185,11 +213,74 @@ def plot(results, out="day1_wetting_conductance.png"):
     fig.tight_layout()
     fig.savefig(out, dpi=160)
     print(f"    plot -> {out}")
-    if os.environ.get("DISPLAY"):
-        try:
-            plt.show()
-        except KeyboardInterrupt:
-            pass
+    maybe_show(plt)
+
+
+def plot_temperature_profiles(results, out="day1_wetting_Tz_profiles.png"):
+    plt = import_pyplot()
+    if plt is None:
+        print("    (matplotlib not found - skipping the T(z) plot)")
+        return
+
+    colors = ["#4B5563", "#1F3A5F", "#B23A2E", "#3C7A3F", "#7C3AED"]
+    fig, ax = plt.subplots(figsize=(4.9, 4.2))
+    for i, row in enumerate(sorted(results, key=lambda r: r["eps_wf"])):
+        color = colors[i % len(colors)]
+        z, T = row["z"], row["T"]
+        label = rf"$\epsilon_{{wf}}={row['eps_wf']:.3g}$"
+        ax.scatter(T, z, s=10, alpha=0.34, color=color)
+        zf = np.linspace(row["z_wall_bot"], row["z_wall_top"], 80)
+        ax.plot(
+            row["fit_slope"] * zf + row["fit_intercept"],
+            zf,
+            color=color,
+            lw=1.4,
+            label=label,
+        )
+        for Tw, Tf, zw in (
+            (row["Tw_bot"], row["Tf_bot"], row["z_wall_bot"]),
+            (row["Tw_top"], row["Tf_top"], row["z_wall_top"]),
+        ):
+            ax.plot([Tw], [zw], "o", color=color, ms=4.8)
+            ax.plot([Tf], [zw], "s", color=color, ms=4.4)
+            ax.plot([Tw, Tf], [zw, zw], color=color, lw=0.9, alpha=0.8)
+
+    ax.axhline(results[0]["z_wall_bot"], color="#999", ls=":", lw=0.8)
+    ax.axhline(results[0]["z_wall_top"], color="#999", ls=":", lw=0.8)
+    ax.set_xlabel(r"$T(z)$")
+    ax.set_ylabel(r"$z\ (\sigma)$")
+    ax.set_title("temperature profiles for wetting sweep")
+    ax.legend(frameon=False, fontsize=8)
+    fig.tight_layout()
+    fig.savefig(out, dpi=160)
+    print(f"    T(z) plot -> {out}")
+    maybe_show(plt)
+
+
+def plot_temperature_jumps(results, out="day1_wetting_temperature_jump.png"):
+    plt = import_pyplot()
+    if plt is None:
+        print("    (matplotlib not found - skipping the temperature-jump plot)")
+        return
+
+    rows = sorted(results, key=lambda r: r["eps_wf"])
+    eps = np.array([r["eps_wf"] for r in rows])
+    d_bot = np.array([r["dT_bot"] for r in rows])
+    d_top = np.array([r["dT_top"] for r in rows])
+    d_mean = np.array([r["dT_mean"] for r in rows])
+
+    fig, ax = plt.subplots(figsize=(4.8, 3.6))
+    ax.plot(eps, d_mean, "o-", color="#1F3A5F", label="mean")
+    ax.plot(eps, d_bot, "s--", color="#B23A2E", alpha=0.8, label="bottom wall")
+    ax.plot(eps, d_top, "^--", color="#3C7A3F", alpha=0.8, label="top wall")
+    ax.set_xlabel(r"wall-fluid attraction $\epsilon_{wf}$")
+    ax.set_ylabel(r"temperature jump $\Delta T$")
+    ax.set_title("Kapitza jump vs wetting strength")
+    ax.legend(frameon=False)
+    fig.tight_layout()
+    fig.savefig(out, dpi=160)
+    print(f"    jump plot -> {out}")
+    maybe_show(plt)
 
 
 def main():
@@ -211,7 +302,9 @@ def main():
             print("      WARNING: poor linear T(z) fit; G is unreliable.")
 
     write_table(results)
-    plot(results)
+    plot_conductance(results)
+    plot_temperature_profiles(results)
+    plot_temperature_jumps(results)
 
 
 if __name__ == "__main__":
