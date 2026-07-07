@@ -51,7 +51,7 @@ imbalance = | |P_bot| - |P_top| | / max(|P_bot|, |P_top|)
 where `P_bot` and `P_top` are the fitted slopes of the cumulative heat exchanged
 by the two Langevin wall baths.
 
-## Result from Cirrus run 283712
+## Result from a small matrix run
 
 With two seeds and `nprod = 40000`, the imbalance was:
 
@@ -104,17 +104,11 @@ slope noise. If the median imbalance genuinely rises with `nequil` even across
 many seeds and long `nprod`, then there is a deeper slow-relaxation or sampling
 issue worth investigating.
 
-## Local artefacts
+## Artefacts
 
-The local result bundle for the small matrix is outside the Git repository:
+The reproducible machinery and summary plots checked into this fork are:
 
-```text
-/Users/vatsal/cowork-os/0-Projects/NEMD-2026-local/results/day1-conductance-nequil-matrix/
-```
-
-It contains:
-
-- `day1_nequil_summary.csv`
-- `day1_nequil_imbalance.png`
-- `day1_nequil_conductance.png`
-- per-case `day1_nequil_*_heat.dat`, `*_Tz.profile`, `*_params.txt`, and logs.
+- `day1/conductance/submit_nequil_matrix.sh`
+- `day1/conductance/analyse_conductance_nequil.py`
+- `notes/assets/conductance-nequil-imbalance.png`
+- `notes/assets/conductance-nequil-conductance.png`
