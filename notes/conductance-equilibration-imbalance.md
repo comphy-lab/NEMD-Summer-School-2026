@@ -69,6 +69,13 @@ this small test, while longer equilibration shifted the fixed-length production
 window to a different stochastic segment whose heat-current slope estimate was
 noisier.
 
+![Heat-bath imbalance versus equilibration steps](assets/conductance-nequil-imbalance.png)
+
+The corresponding mean conductance estimates also move with the finite
+production window:
+
+![Mean conductance versus equilibration steps](assets/conductance-nequil-conductance.png)
+
 ## Interpretation
 
 The imbalance is not itself a thermodynamic state variable. It is a finite-window
