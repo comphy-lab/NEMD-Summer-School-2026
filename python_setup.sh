@@ -23,7 +23,7 @@ echo "Upgrading pip..."
 python -m pip install --upgrade pip
 
 echo "Installing Python packages..."
-python -m pip install matplotlib scikit-learn
+python -m pip install matplotlib scikit-learn pytim --upgrade
 
 echo "Creating test.py..."
 cat > test.py <<'EOF'

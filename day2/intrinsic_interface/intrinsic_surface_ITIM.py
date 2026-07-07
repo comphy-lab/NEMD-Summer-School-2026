@@ -3,7 +3,7 @@
 import argparse
 p = argparse.ArgumentParser()
 p.add_argument("trajectory", nargs="?", default="day2_traj.lammpstrj")
-p.add_argument("-a", "--alpha", type=float, default=0.6)
+p.add_argument("-a", "--alpha", type=float, default=0.8)
 p.add_argument("-l", "--layers", type=int, default=5)
 p.add_argument("--start", type=int, default=100)
 p.add_argument("--stop", type=int, default=-1)
