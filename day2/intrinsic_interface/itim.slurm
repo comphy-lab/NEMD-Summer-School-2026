@@ -13,6 +13,9 @@
 # Set the number of threads to 1
 export OMP_NUM_THREADS=1
 
+#Remove old lammps output
+rm day2_* slurm*
+
 module load lammps
 
 # Launch the parallel job

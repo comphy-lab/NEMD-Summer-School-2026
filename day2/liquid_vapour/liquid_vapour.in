@@ -64,9 +64,17 @@ create_atoms 1 region vaptop
 
 mass  1 1.0
 group fluid type 1
-pair_style lj/cut ${rcut}
-pair_modify shift no tail no
-pair_coeff 1 1 1.0 1.0 ${rcut}
+
+if "${rcut} > 0" then &
+ "pair_style lj/cut ${rcut}" &
+ "pair_modify shift no tail no" &
+ "pair_coeff 1 1 1.0 1.0 ${rcut}"
+
+if "${rcut} == 0" then &
+ "pair_style      lj/long/coul/long long off 3.0" &
+ "pair_coeff      1 1 1.0 1.0" &
+ "kspace_style    pppm/disp 1.0e-5" &
+ "kspace_modify   force/disp/real 0.002 force/disp/kspace 0.05"
 
 neighbor 0.3 bin
 neigh_modify delay 0 every 1 check yes
